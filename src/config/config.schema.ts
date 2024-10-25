@@ -10,6 +10,10 @@ export class ConfigApp {
   @IsNotEmpty()
   PORT: number;
 
+  @IsNumber()
+  @IsNotEmpty()
+  WS_PORT: number;
+
   @IsString()
   @IsNotEmpty()
   HOST: string;
