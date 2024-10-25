@@ -6,7 +6,7 @@ import { SubscribeExampleModule } from '../subscribe_example/subscribe_example.m
 @Module({
   imports: [
     WebsocketModule,
-    SubscribeExampleModule
+    SubscribeExampleModule,
   ],
 })
 export class AppModule {}
