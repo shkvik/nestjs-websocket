@@ -2,11 +2,23 @@ import { WebSocketGateway } from "@nestjs/websockets";
 import { WebSocketClient } from "../interface";
 import { IncomingMessage } from "node:http";
 import { Logger } from "@nestjs/common";
-import { applyDecorators, CustomDecorator } from '@nestjs/common';
 
 
 export function WebSocketGatewayV2(port: number) {
   const logger = new Logger("WebSocket");
+
+  const wrapMethod = (target: any, propertyKey: string, descriptor: PropertyDescriptor,) => {
+    const originalMethod = descriptor.value;
+
+    descriptor.value = async function (client: WebSocketClient, request: IncomingMessage) {
+      try {
+        await originalMethod.apply(this, [client, request]);
+      } catch (err) {
+        logger.error(err.message);
+      }
+    };
+    return descriptor;
+  }
 
   return function (constructor: Function) {
     WebSocketGateway(port, { transports: ['websocket'] })(constructor);
@@ -23,29 +35,9 @@ export function WebSocketGatewayV2(port: number) {
         Object.defineProperty(
           constructor.prototype,
           methodName,
-          wrapMethod(constructor, methodName, descriptor, logger)
+          wrapMethod(constructor, methodName, descriptor)
         );
       }
     }
-    
   };
-}
-
-function wrapMethod(
-  target: any,
-  propertyKey: string,
-  descriptor: PropertyDescriptor,
-  logger: Logger
-) {
-  const originalMethod = descriptor.value;
-  
-  descriptor.value = async function (client: WebSocketClient, request: IncomingMessage) {
-    try {
-      await originalMethod.apply(this, [client, request]);
-    } catch (err) {
-      logger.error(err.message);
-    }
-  };
-
-  return descriptor;
 }

@@ -11,19 +11,14 @@ export class WebsocketManager {
   private readonly clients = new Map<string, WebSocketClient>();
 
   public async connect(wsClient: WebSocketClient, request: IncomingMessage) {
-
-    throw new Error("YES connect");
-    const connectionId = randomUUID();
-    wsClient.connectionId = connectionId;
-
-    this.clients.set(connectionId, wsClient);
+    wsClient.connectionId = randomUUID();
+    this.clients.set(wsClient.connectionId, wsClient);
     this.logger.log(`${this.clients.size} users connected`);
   }
 
   public async disconnect(wsClient: WebSocketClient) {
-    throw new Error("YES disconnect");
-    if (this.clients.has(wsClient?.userId)) {
-      this.clients.delete(wsClient.userId);
+    if (this.clients.has(wsClient?.connectionId)) {
+      this.clients.delete(wsClient.connectionId);
       this.logger.log(`${this.clients.size} users are connected`);
     }
     wsClient.close();
