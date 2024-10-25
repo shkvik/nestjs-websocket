@@ -37,15 +37,25 @@ export class WebsocketManager {
     }
   }
 
-  private attachHandlers(wsClient: WebSocketClient): void {
-    wsClient.on('message', async (data) => {
+  private attachHandlers(client: WebSocketClient): void {
+    client.on('message', async (data) => {
       const obj = JSON.parse(String(data));
 
       if (obj.hasOwnProperty('event')) {
         if (this.handlers.has(obj.event)) {
           const functions = this.handlers.get(obj.event);
+          const responses = [];
           for (const func of functions) {
-            await func(data);
+            const res = await func(data);
+            if (res) {
+              responses.push(res);
+            }
+          }
+          if (responses.length === 1) {
+            client.send(JSON.stringify(responses[0]));
+          }
+          if (responses.length > 1) {
+            client.send(JSON.stringify(responses));
           }
         }
       }

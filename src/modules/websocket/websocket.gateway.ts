@@ -2,8 +2,9 @@ import { WebsocketManager } from './websocket.manager';
 import { WebSocketClient } from './interface';
 import { ExampleGuard } from './guards/example.guard';
 import { ConnectionGuard, WebSocketGatewayV2 } from './common';
-import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketServer } from '@nestjs/websockets';
 import { CONFIG_APP } from 'src/config/config.export';
+import { Server } from 'ws';
   
 
 @WebSocketGatewayV2({ port: CONFIG_APP.WS_PORT })

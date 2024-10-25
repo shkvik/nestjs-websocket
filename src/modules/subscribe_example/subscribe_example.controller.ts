@@ -1,17 +1,13 @@
-import { Get } from '@nestjs/common';
-import { Subscribe, SubscribeController } from '../websocket/common';
+import { Event, WebsocketController } from '../websocket/common';
 import { SubscribeExampleService } from './subscribe_example.service';
-import { ModuleRef } from '@nestjs/core';
 
-@SubscribeController()
+@WebsocketController()
 export class SubscribeExampleController {
   
-  constructor(
-    private readonly subscribeExampleService: SubscribeExampleService
-  ) {}
-
-  @Subscribe('example')
-  public getHello(): void {
-    this.subscribeExampleService.getHello();
+  constructor(private exampleService: SubscribeExampleService) {}
+    
+  @Event('example')
+  public getHello(): string {
+    return this.exampleService.getHello();
   }
 }
