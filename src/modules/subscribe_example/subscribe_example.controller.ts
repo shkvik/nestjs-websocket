@@ -1,10 +1,10 @@
 import { Event, WebsocketController } from '../websocket/common';
-import { SubscribeExampleService } from './subscribe_example.service';
+import { ExampleService } from './subscribe_example.service';
 
 @WebsocketController()
-export class SubscribeExampleController {
+export class ExampleController {
   
-  constructor(private exampleService: SubscribeExampleService) {}
+  constructor(private exampleService: ExampleService) {}
     
   @Event('example')
   public getHello(): string {
