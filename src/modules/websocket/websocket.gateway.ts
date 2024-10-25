@@ -1,26 +1,21 @@
 import { WebsocketManager } from './websocket.manager';
 import { IncomingMessage } from 'http';
-import { Server } from 'ws';
-import { UseGuards } from '@nestjs/common';
 import { WebSocketClient } from './interface';
+import { WebsocketGuard } from './common/websocket.guard.decorator';
+import { TestGuard } from './guards/example.guard';
+import { WebSocketGatewayV2 } from './common/websocket.gateway.decorator';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
-  WebSocketGateway,
-  WebSocketServer,
 } from '@nestjs/websockets';
-import { ConnectionGuard, TestGuard } from './guards/connection.guard';
 
 
-@WebSocketGateway(8080, { transports: ['websocket'] })
+@WebSocketGatewayV2(8080)
 export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
-
-  // @WebSocketServer()
-  // public server: Server;
 
   constructor(private readonly websocketManagerService: WebsocketManager) {}
 
-  @ConnectionGuard(TestGuard)
+  @WebsocketGuard(TestGuard)
   public async handleConnection(client: WebSocketClient, request: IncomingMessage) {
     await this.websocketManagerService.connect(client, request);
   }
