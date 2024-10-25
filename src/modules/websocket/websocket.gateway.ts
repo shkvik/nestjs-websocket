@@ -1,5 +1,4 @@
 import { WebsocketManager } from './websocket.manager';
-import { IncomingMessage } from 'http';
 import { WebSocketClient } from './interface';
 import { ExampleGuard } from './guards/example.guard';
 import { ConnectionGuard, WebSocketGatewayV2 } from './common';
