@@ -1,19 +1,20 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { WebSocketClient } from "./interface";
+import { RawData } from "ws";
 
 @Injectable()
 export class WebsocketManager {
-  private readonly handlers = new Map<string, Array<Function>>();
-  private readonly logger = new Logger(WebsocketManager.name);
+
+  private readonly handlers = new Map<string, Function[]>();
   private readonly clients = new Map<string, WebSocketClient>();
 
-  public async connect(wsClient: WebSocketClient) {
+  private async connect(wsClient: WebSocketClient) {
     // Here you can use any database or other methods to controll user sessions
     this.attachHandlers(wsClient);
     this.clients.set(wsClient.connectionId, wsClient);
   }
 
-  public async disconnect(wsClient: WebSocketClient) {
+  private async disconnect(wsClient: WebSocketClient) {
     // async needs to delete from redis or other dbs
     this.clients.delete(wsClient.connectionId);
   }
@@ -29,7 +30,7 @@ export class WebsocketManager {
     return this.clients.has(connectionId);
   }
 
-  public addHandler(event: string, handler: Function): void {
+  private addHandler(event: string, handler: Function): void {
     if (this.handlers.has(event)) {
       this.handlers.get(event).push(handler);
     } else {
@@ -38,10 +39,18 @@ export class WebsocketManager {
   }
 
   private attachHandlers(client: WebSocketClient): void {
-    client.on('message', async (data) => {
-      const obj = JSON.parse(String(data));
+    const getObject = (data: RawData): any => {
+      try {
+        return JSON.parse(String(data));
+      } catch {
+        return undefined;
+      }
+    };
 
-      if (obj.hasOwnProperty('event')) {
+    client.on('message', async (data) => {
+      const obj = getObject(data);
+
+      if (obj && obj.hasOwnProperty('event')) {
         if (this.handlers.has(obj.event)) {
           const functions = this.handlers.get(obj.event);
           const responses = [];

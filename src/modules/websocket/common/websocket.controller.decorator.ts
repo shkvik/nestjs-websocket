@@ -28,7 +28,7 @@ export function WebsocketController() {
               }
             };
             Object.defineProperty(this, methodName, descriptor);
-            this.websocketManager.addHandler(event, descriptor.value);
+            this.websocketManager['addHandler'](event, descriptor.value);
           }
         }
       }

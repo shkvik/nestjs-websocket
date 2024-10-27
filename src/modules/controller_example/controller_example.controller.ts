@@ -1,5 +1,5 @@
 import { Event, WebsocketController } from '../websocket/common';
-import { ExampleService } from './subscribe_example.service';
+import { ExampleService } from './controller_example.service';
 
 @WebsocketController()
 export class ExampleController {
